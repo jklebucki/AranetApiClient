@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace SensorDefinitions;
 
 public class Temperature3Sensor : SensorBase

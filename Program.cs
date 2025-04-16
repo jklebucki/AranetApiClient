@@ -1,24 +1,16 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using AranetApiClient.HttpClients;
+using System.Net;
 
-var host = Host.CreateDefaultBuilder()
-    .ConfigureServices(services =>
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient<AuthClient>()
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
     {
-        services.AddAuthClient();
-    })
-    .Build();
+        CookieContainer = new CookieContainer(),
+        UseCookies = true
+    });
 
-var authClient = host.Services.GetRequiredService<AuthClient>();
+var app = builder.Build();
 
-if (await authClient.LoginAsync("citro_admin", "Tempora3udostemp"))
-{
-    Console.WriteLine("✅ Zalogowano pomyślnie!");
-
-    var result = await authClient.GetSecureDataAsync();
-    Console.WriteLine("🔒 Dane po zalogowaniu:");
-    Console.WriteLine(result);
-}
-else
-{
-    Console.WriteLine("❌ Błąd logowania.");
-}

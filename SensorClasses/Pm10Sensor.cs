@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace SensorDefinitions;
 
 public class Pm10Sensor : SensorBase

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace SensorDefinitions;
 
 public class Voltage2Sensor : SensorBase
