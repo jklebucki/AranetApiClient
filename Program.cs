@@ -6,10 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+var sharedCookieContainer = new CookieContainer();
+
 builder.Services.AddHttpClient("AranetApiClient")
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
     {
-        CookieContainer = new CookieContainer(),
+        CookieContainer = sharedCookieContainer,
         UseCookies = true
     });
 
