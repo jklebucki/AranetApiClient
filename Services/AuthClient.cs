@@ -12,10 +12,10 @@ public class AuthClient : IAuthClient
     private readonly string _baseUrl = "http://77.91.1.141:55200/lua/api";
     private readonly PasswordHasher _passwordHasher;
 
-    public AuthClient(HttpClient httpClient, PasswordHasher passwordHasher)
+    public AuthClient(IHttpClientFactory httpClientFactory, PasswordHasher passwordHasher)
     {
         _passwordHasher = passwordHasher;
-        _httpClient = httpClient;
+        _httpClient = httpClientFactory.CreateClient("AranetApiClient");
     }
 
     public async Task<bool> LoginAsync(string username, string password)

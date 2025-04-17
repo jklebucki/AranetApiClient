@@ -5,17 +5,46 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient<HttpClient>()
+
+builder.Services.AddHttpClient("AranetApiClient")
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
     {
         CookieContainer = new CookieContainer(),
         UseCookies = true
     });
 
-
 builder.Services.AddScoped<IAuthClient, AuthClient>();
 builder.Services.AddScoped<PasswordHasher>();
 //builder.Services.AddScoped<IApiCollector, ApiCollector>();
 
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+// Add controllers
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+// Enable CORS
+app.UseCors();
+
+// Map controllers
+app.MapControllers();
+
+app.Run();
