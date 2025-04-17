@@ -1,7 +1,9 @@
 using System.Security.Cryptography;
 using System.Text;
 
-public static class PasswordHasher
+namespace AranetApiClient.Services;
+
+public class PasswordHasher : IPasswordHasher
 {
     /// <summary>
     /// Hashuje hasło zgodnie z logiką z frontendu (5x SHA256 → +permasalt → SHA256 → +salt → SHA256).
@@ -10,7 +12,7 @@ public static class PasswordHasher
     /// <param name="permasalt">Stała sól (permasalt)</param>
     /// <param name="salt">Losowa sól dla sesji logowania</param>
     /// <returns>Zahashowane hasło gotowe do wysłania do backendu</returns>
-    public static string HashPassword(string password, string permasalt, string salt)
+    public string HashPassword(string password, string permasalt, string salt)
     {
         // 1. Pięciokrotne SHA256 hasła
         string hashed = password;
