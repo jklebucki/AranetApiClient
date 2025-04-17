@@ -18,7 +18,7 @@ builder.Services.AddHttpClient("AranetApiClient")
 
 builder.Services.AddScoped<IAuthClient, AuthClient>();
 builder.Services.AddScoped<PasswordHasher>();
-//builder.Services.AddScoped<IApiCollector, ApiCollector>();
+builder.Services.AddScoped<IApiCollector, ApiCollector>();
 
 // Add CORS policy
 builder.Services.AddCors(options =>
