@@ -32,10 +32,10 @@ public class ApiCollector : IApiCollector
         {
             PropertyNameCaseInsensitive = true
         };
-        //options.Converters.Add(new SensorMetricDefinitionConverter());
+        // Dodanie konwerterów do opcji serializacji
         options.Converters.Add(new MetricsConverter());
         options.Converters.Add(new ProductNumberConverter());
-        
+        options.PropertyNameCaseInsensitive = true;
         // Deserializacja typów czujników
         var document = JsonDocument.Parse(json);
 
