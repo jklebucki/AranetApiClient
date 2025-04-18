@@ -1,7 +1,5 @@
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using AranetApiClient.Responses;
 
 namespace AranetApiClient.Services;
@@ -9,10 +7,10 @@ namespace AranetApiClient.Services;
 public class AuthClient : IAuthClient
 {
     private readonly HttpClient _httpClient;
-    private readonly string _baseUrl = "http://77.91.1.141:55200/lua/api";
-    private readonly PasswordHasher _passwordHasher;
+    private readonly string _baseUrl = "/lua/api";
+    private readonly IPasswordHasher _passwordHasher;
 
-    public AuthClient(IHttpClientFactory httpClientFactory, PasswordHasher passwordHasher)
+    public AuthClient(IHttpClientFactory httpClientFactory, IPasswordHasher passwordHasher)
     {
         _passwordHasher = passwordHasher;
         _httpClient = httpClientFactory.CreateClient("AranetApiClient");
