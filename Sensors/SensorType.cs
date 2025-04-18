@@ -7,11 +7,12 @@ public class SensorType
     public string Icon { get; set; }
 
     [JsonPropertyName("metrics")]
-    public Dictionary<string, SensorMetricDefinition> Metrics { get; set; }
+    [JsonConverter(typeof(MetricsDictionaryConverter))]
+    public Dictionary<string, SensorMetricDefinition> Metrics { get; set; } = new Dictionary<string, SensorMetricDefinition>();
 
     [JsonPropertyName("productNumber")]
     [JsonConverter(typeof(ProductNumberConverter))]
-    public ProductNumber ProductNumber { get; set; }
+    public ProductNumber ProductNumber { get; set; } = new ProductNumber();
 }
 
 public class SensorTypeCollection : Dictionary<string, Dictionary<string, SensorType>> { }

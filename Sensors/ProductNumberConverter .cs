@@ -1,28 +1,38 @@
-namespace AranetApiClient.Sensors;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-public class ProductNumberConverter : JsonConverter<ProductNumber>
+public class ProductNumberConverter : JsonConverter<Dictionary<string, string>>
 {
-    public override ProductNumber Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override Dictionary<string, string> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        var result = new Dictionary<string, string>();
+
         if (reader.TokenType == JsonTokenType.String)
         {
-            return new ProductNumber { Single = reader.GetString()! };
+            result["0"] = reader.GetString()!;
         }
         else if (reader.TokenType == JsonTokenType.StartObject)
         {
             var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(ref reader, options);
-            return new ProductNumber { Multiple = dict };
+            if (dict != null)
+            {
+                foreach (var kvp in dict)
+                    result[kvp.Key] = kvp.Value;
+            }
         }
-        throw new JsonException("Unexpected token for ProductNumber");
+
+        return result;
     }
 
-    public override void Write(Utf8JsonWriter writer, ProductNumber value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, Dictionary<string, string> value, JsonSerializerOptions options)
     {
-        if (value.IsMultiple)
-            JsonSerializer.Serialize(writer, value.Multiple, options);
+        if (value.Count == 1 && value.ContainsKey("0"))
+        {
+            writer.WriteStringValue(value["0"]);
+        }
         else
-            writer.WriteStringValue(value.Single);
+        {
+            JsonSerializer.Serialize(writer, value, options);
+        }
     }
 }

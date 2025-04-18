@@ -32,8 +32,10 @@ public class ApiCollector : IApiCollector
         {
             PropertyNameCaseInsensitive = true
         };
-        options.Converters.Add(new SensorMetricDefinitionConverter());
-
+        //options.Converters.Add(new SensorMetricDefinitionConverter());
+        options.Converters.Add(new MetricsConverter());
+        options.Converters.Add(new ProductNumberConverter());
+        
         // Deserializacja typów czujników
         var document = JsonDocument.Parse(json);
 
@@ -41,9 +43,17 @@ public class ApiCollector : IApiCollector
             .GetProperty("sensors")
             .GetProperty("getMetricInfo")
             .GetProperty("sensorInfo");
-        var sensorTypesElementRaw = sensorTypesElement.ToString();
-        var sensorTypes = sensorTypesElement.Deserialize<SensorTypeCollection>(options)!; 
-
+        var sensorMap = new Dictionary<(int ptype, int vari), SensorDefinition>();
+        foreach (var ptypeEntry in sensorTypesElement.EnumerateObject())
+        {
+            int ptype = int.Parse(ptypeEntry.Name);
+            foreach (var variEntry in ptypeEntry.Value.EnumerateObject())
+            {
+                int vari = int.Parse(variEntry.Name);
+                var sensorDef = JsonSerializer.Deserialize<SensorDefinition>(variEntry.Value.GetRawText(), options);
+                sensorMap[(ptype, vari)] = sensorDef!;
+            }
+        }
         // Deserializacja aktualnych czujników
         var sensorsRawElement = document.RootElement
             .GetProperty("sensors_raw")
