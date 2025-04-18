@@ -41,7 +41,7 @@ public class ApiCollector : IApiCollector
             .GetProperty("sensors")
             .GetProperty("getMetricInfo")
             .GetProperty("sensorInfo");
-
+        var sensorTypesElementRaw = sensorTypesElement.ToString();
         var sensorTypes = sensorTypesElement.Deserialize<SensorTypeCollection>(options)!; 
 
         // Deserializacja aktualnych czujników
