@@ -1,8 +1,11 @@
 using AranetApiClient.Services;
-using System.Data;
 using System.Data.SQLite;
 using Npgsql;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
+using AranetApiClient.Data.Postgres;
+using AranetApiClient.Data.Sqlite;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 var apiSettings = builder.Configuration.GetSection("ApiSettings");
 var sqliteConnectionString = builder.Configuration.GetConnectionString("SQLite");
 var postgresConnectionString = builder.Configuration.GetConnectionString("Postgres");
+builder.Services.AddDbContext<PostgresDbContext>(options =>
+    options.UseNpgsql(postgresConnectionString));
+
+builder.Services.AddDbContext<SqliteDbContext>(options =>
+    options.UseSqlite(sqliteConnectionString));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -31,7 +39,6 @@ builder.Services.AddScoped<IAuthClient, AuthClient>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IApiCollector, ApiCollector>();
 
-// Add CORS policy
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -42,19 +49,16 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add controllers
 builder.Services.AddControllers();
 
-// Register Dapper connections
-builder.Services.AddScoped<IDbConnection>(sp =>
-{
-    var usePostgres = builder.Configuration.GetValue<bool>("UsePostgres");
-    if (usePostgres)
-    {
-        return new NpgsqlConnection(postgresConnectionString);
-    }
-    return new SQLiteConnection(sqliteConnectionString);
-});
+// Register PostgreSQL connection
+builder.Services.AddScoped<NpgsqlConnection>(_ => new NpgsqlConnection(postgresConnectionString));
+// Register SQLite connection
+builder.Services.AddScoped<SQLiteConnection>(_ => new SQLiteConnection(sqliteConnectionString));
+
+// Register repositories
+//builder.Services.AddScoped<ISensorPostgresRepository, SensorPostgresRepository>();
+//builder.Services.AddScoped<ISensorSqliteRepository, SensorSqliteRepository>();
 
 var app = builder.Build();
 
@@ -65,11 +69,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// Enable CORS
 app.UseCors();
-
-// Map controllers
 app.MapControllers();
-
 app.Run();

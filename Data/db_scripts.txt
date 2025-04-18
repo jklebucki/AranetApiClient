@@ -1,0 +1,6 @@
+dotnet ef migrations add InitPostgres --context PostgresDbContext --output-dir Data/Postgres/Migrations
+dotnet ef migrations add InitSqlite --context SqliteDbContext --output-dir Data/Sqlite/Migrations
+
+
+dotnet ef database update --context PostgresDbContext
+dotnet ef database update --context SqliteDbContext
