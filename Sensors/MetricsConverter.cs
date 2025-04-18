@@ -13,12 +13,12 @@ public class MetricsConverter : JsonConverter<Dictionary<string, MetricDefinitio
             if (prop.Value.ValueKind == JsonValueKind.Object)
             {
                 var metric = prop.Value.Deserialize<MetricDefinition>(options);
-                result[prop.Name] = metric;
+                result[prop.Name] = metric!;
             }
             else if (prop.Value.ValueKind == JsonValueKind.Array)
             {
                 // Pusta lista → metryka bez dodatkowych właściwości
-                result[prop.Name] = null; // lub new MetricDefinition() jeśli wolisz
+                result[prop.Name] = null!; // lub new MetricDefinition() jeśli wolisz
             }
             else
             {

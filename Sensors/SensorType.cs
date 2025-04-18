@@ -1,10 +1,9 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace AranetApiClient.Sensors;
 public class SensorType
 {
     [JsonPropertyName("icon")]
-    public string Icon { get; set; }
+    public string Icon { get; set; } = string.Empty;
 
     [JsonPropertyName("metrics")]
     [JsonConverter(typeof(MetricsDictionaryConverter))]
