@@ -14,7 +14,7 @@ public class ApiCollector : IApiCollector
 
         var jsonRequest = JsonSerializer.Serialize(sensorRequest);
         var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-        var response = await _httpClient.PostAsync("http://77.91.1.141:55200/lua/csvProvider", content);
+        var response = await _httpClient.PostAsync("/lua/csvProvider", content);
         var csvContent = await response.Content.ReadAsStringAsync();
         var csvLines = csvContent.Split('\n');
 
@@ -26,7 +26,7 @@ public class ApiCollector : IApiCollector
         var sensorsRequest = SensorsRequest.Default(username);
         var jsonRequest = JsonSerializer.Serialize(sensorsRequest);
         var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-        var response = await _httpClient.PostAsync("http://77.91.1.141:55200/lua/api", content);
+        var response = await _httpClient.PostAsync("/lua/api", content);
         var json = await response.Content.ReadAsStringAsync();
         var options = new JsonSerializerOptions
         {
@@ -36,9 +36,9 @@ public class ApiCollector : IApiCollector
         options.Converters.Add(new MetricsConverter());
         options.Converters.Add(new ProductNumberConverter());
         options.PropertyNameCaseInsensitive = true;
+
         // Deserializacja typów czujników
         var document = JsonDocument.Parse(json);
-
         var sensorTypesElement = document.RootElement
             .GetProperty("sensors")
             .GetProperty("getMetricInfo")
@@ -54,6 +54,7 @@ public class ApiCollector : IApiCollector
                 sensorMap[(ptype, vari)] = sensorDef!;
             }
         }
+
         // Deserializacja aktualnych czujników
         var sensorsRawElement = document.RootElement
             .GetProperty("sensors_raw")

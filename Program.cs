@@ -3,13 +3,19 @@ using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load configuration
+var apiSettings = builder.Configuration.GetSection("ApiSettings");
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 var sharedCookieContainer = new CookieContainer();
 
 builder.Services.AddHttpClient("AranetApiClient")
+    .ConfigureHttpClient(client =>
+    {
+        client.BaseAddress = new Uri(apiSettings["BaseAddress"] ?? string.Empty);
+    })
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
     {
         CookieContainer = sharedCookieContainer,
