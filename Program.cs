@@ -1,10 +1,15 @@
 using AranetApiClient.Services;
+using System.Data;
+using System.Data.SQLite;
+using Npgsql;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Load configuration
 var apiSettings = builder.Configuration.GetSection("ApiSettings");
+var sqliteConnectionString = builder.Configuration.GetConnectionString("SQLite");
+var postgresConnectionString = builder.Configuration.GetConnectionString("Postgres");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -39,6 +44,17 @@ builder.Services.AddCors(options =>
 
 // Add controllers
 builder.Services.AddControllers();
+
+// Register Dapper connections
+builder.Services.AddScoped<IDbConnection>(sp =>
+{
+    var usePostgres = builder.Configuration.GetValue<bool>("UsePostgres");
+    if (usePostgres)
+    {
+        return new NpgsqlConnection(postgresConnectionString);
+    }
+    return new SQLiteConnection(sqliteConnectionString);
+});
 
 var app = builder.Build();
 
