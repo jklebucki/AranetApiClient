@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-public class SensorRequest
+public class SensorDataRequest
 {
     [JsonPropertyName("from")]
     public int From { get; set; }
